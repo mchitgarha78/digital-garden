@@ -1,3 +1,11 @@
+export function decodeSlug(raw: string): string {
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
+
 export function slugify(title: string): string {
   const slug = title
     .trim()

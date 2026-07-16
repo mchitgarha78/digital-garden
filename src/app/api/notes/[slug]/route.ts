@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getUserFromRequest } from "@/lib/auth";
 import { jsonError, notFound, unauthorized } from "@/lib/api";
-import { slugify, syncNoteLinks } from "@/lib/links";
+import { decodeSlug, slugify, syncNoteLinks } from "@/lib/links";
 import { prisma } from "@/lib/prisma";
 
 type RouteContext = { params: Promise<{ slug: string }> };
@@ -18,7 +18,8 @@ export async function GET(request: Request, context: RouteContext) {
   const user = await getUserFromRequest(request);
   if (!user) return unauthorized();
 
-  const { slug } = await context.params;
+  const { slug: rawSlug } = await context.params;
+  const slug = decodeSlug(rawSlug);
 
   const note = await prisma.note.findFirst({
     where: { userId: user.id, slug },
@@ -41,7 +42,8 @@ export async function PUT(request: Request, context: RouteContext) {
   const user = await getUserFromRequest(request);
   if (!user) return unauthorized();
 
-  const { slug } = await context.params;
+  const { slug: rawSlug } = await context.params;
+  const slug = decodeSlug(rawSlug);
 
   try {
     const existing = await prisma.note.findFirst({
@@ -124,7 +126,8 @@ export async function DELETE(request: Request, context: RouteContext) {
   const user = await getUserFromRequest(request);
   if (!user) return unauthorized();
 
-  const { slug } = await context.params;
+  const { slug: rawSlug } = await context.params;
+  const slug = decodeSlug(rawSlug);
 
   const existing = await prisma.note.findFirst({
     where: { userId: user.id, slug },

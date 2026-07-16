@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { requireSession } from "@/lib/auth";
+import { decodeSlug } from "@/lib/links";
 import { prisma } from "@/lib/prisma";
 import { NotePageClient } from "@/components/notes/NotePageClient";
 
@@ -7,7 +8,8 @@ type PageProps = { params: Promise<{ slug: string }> };
 
 export default async function NoteDetailPage({ params }: PageProps) {
   const session = await requireSession();
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeSlug(rawSlug);
 
   const note = await prisma.note.findFirst({
     where: { userId: session.id, slug },
