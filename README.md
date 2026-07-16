@@ -1,20 +1,20 @@
-# باغ دیجیتال (Digital Garden)
+# Digital Garden
 
-پروژه کارشناسی — طراحی و پیاده‌سازی یک **باغ دیجیتال تعاملی** مبتنی بر گراف دانش با پیوندهای دوسویه.
+Bachelor's thesis project — design and implementation of an **interactive digital garden** built on a knowledge graph with bidirectional links.
 
-## ویژگی‌ها (MVP)
+## Features (MVP)
 
-- **ویرایشگر TipTap** با پشتیبانی Markdown و سینتکس لینک `[[عنوان یادداشت]]`
-- **بک‌لینک خودکار** — تحلیل متن و ایجاد پیوند دوسویه در PostgreSQL
-- **نمای باغ (Garden View)** — گراف تعاملی با React Flow (کشیدن، زوم، کلیک)
-- **گراف محلی (Local Graph)** — همسایگان مستقیم هر یادداشت
-- **داشبورد** — آمار باغ، بذرهای یتیم، آخرین ویرایش‌ها
-- **یافتن مسیر** — الگوریتم BFS و کوئری `WITH RECURSIVE` در PostgreSQL
+- **TipTap editor** with Markdown support and `[[note title]]` link syntax
+- **Automatic backlinks** — text analysis and bidirectional link creation in PostgreSQL
+- **Garden View** — interactive graph with React Flow (drag, zoom, click)
+- **Local Graph** — direct neighbors of each note
+- **Dashboard** — garden stats, orphan seeds, recent edits
+- **Path finding** — BFS algorithm and `WITH RECURSIVE` queries in PostgreSQL
 
-## پشته فناوری
+## Tech Stack
 
-| لایه | فناوری |
-|------|--------|
+| Layer | Technology |
+|-------|------------|
 | Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS |
 | Editor | TipTap |
 | Graph UI | React Flow (@xyflow/react) |
@@ -22,24 +22,24 @@
 | Database | PostgreSQL 16 |
 | ORM | Prisma 7 |
 
-## اجرا با Docker (پیشنهادی)
+## Run with Docker (recommended)
 
 ```bash
-# ساخت و اجرای اپ + دیتابیس
+# Build and run app + database
 docker compose up --build
 
-# اپ: http://localhost:3000
-# دیتابیس: localhost:5432
+# App: http://localhost:3000
+# Database: localhost:5432
 ```
 
-ورود نمونه (بعد از seed):
-- **ایمیل:** `demo@garden.local`
-- **رمز:** `demo123456`
+Sample login (after seed):
+- **Email:** `demo@garden.local`
+- **Password:** `demo123456`
 
-## توسعه محلی
+## Local Development
 
 ```bash
-# فقط دیتابیس
+# Database only
 docker compose up -d db
 
 cp .env.example .env
@@ -50,48 +50,48 @@ npm run db:seed
 npm run dev
 ```
 
-## ساختار دیتابیس (ERD)
+## Database Structure (ERD)
 
 ```
 User 1──N Note 1──N Link N──1 Note
 ```
 
-- **User** — کاربران سیستم
-- **Note** — بذرها (یادداشت‌ها) با موقعیت گراف (`posX`, `posY`)
-- **Link** — یال‌های گراف (source → target)، بک‌لینک از طریق query معکوس
+- **User** — system users
+- **Note** — seeds (notes) with graph position (`posX`, `posY`)
+- **Link** — graph edges (source → target); backlinks via reverse query
 
-## APIهای اصلی
+## Main APIs
 
-| Method | Endpoint | توضیح |
-|--------|----------|-------|
-| POST | `/api/auth/register` | ثبت‌نام |
-| POST | `/api/auth/login` | ورود |
-| GET/POST | `/api/notes` | لیست / ایجاد یادداشت |
-| GET/PUT/DELETE | `/api/notes/[slug]` | CRUD یادداشت |
-| GET | `/api/graph` | گراف کامل یا مسیر (`?from=&to=&method=bfs\|cte`) |
-| GET | `/api/graph/local/[slug]` | گراف محلی |
-| GET | `/api/dashboard` | آمار و بذرهای یتیم |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/register` | Register |
+| POST | `/api/auth/login` | Login |
+| GET/POST | `/api/notes` | List / create notes |
+| GET/PUT/DELETE | `/api/notes/[slug]` | Note CRUD |
+| GET | `/api/graph` | Full graph or path (`?from=&to=&method=bfs\|cte`) |
+| GET | `/api/graph/local/[slug]` | Local graph |
+| GET | `/api/dashboard` | Stats and orphan seeds |
 
-## لینک‌دهی Wiki-style
+## Wiki-style Linking
 
-در متن یادداشت بنویسید:
+In note content, write:
 
 ```
-این ایده به [[مدیریت دانش]] مرتبط است.
+This idea relates to [[Knowledge Management]].
 ```
 
-سیستم عنوان یا slug را match کرده و لینک + بک‌لینک ایجاد می‌کند.
+The system matches by title or slug and creates the link and backlink.
 
-## اسکریپت‌ها
+## Scripts
 
 ```bash
-npm run dev          # توسعه
-npm run build        # build تولید
-npm run db:migrate   # migration توسعه
-npm run db:seed      # داده نمونه
+npm run dev          # Development
+npm run build        # Production build
+npm run db:migrate   # Development migration
+npm run db:seed      # Sample data
 npm run db:studio    # Prisma Studio
 ```
 
-## مجوز
+## License
 
-پروژه آموزشی — پروژه کارشناسی
+Educational project — bachelor's thesis
