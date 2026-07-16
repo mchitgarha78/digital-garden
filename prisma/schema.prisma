@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  notes     Note[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String
+  content   String   @default("")
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  posX      Float    @default(0) @map("pos_x")
+  posY      Float    @default(0) @map("pos_y")
+  outgoing  Link[]   @relation("OutgoingLinks")
+  incoming  Link[]   @relation("IncomingLinks")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, slug])
+  @@index([userId])
+  @@map("notes")
+}
+
+model Link {
+  id        String   @id @default(cuid())
+  sourceId  String   @map("source_id")
+  targetId  String   @map("target_id")
+  source    Note     @relation("OutgoingLinks", fields: [sourceId], references: [id], onDelete: Cascade)
+  target    Note     @relation("IncomingLinks", fields: [targetId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([sourceId, targetId])
+  @@index([sourceId])
+  @@index([targetId])
+  @@map("links")
+}
