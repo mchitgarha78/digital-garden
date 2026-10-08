@@ -5,7 +5,70 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>پایان‌نامه کارشناسی — طراحی و پیاده‌سازی باغ دیجیتال تعاملی</title>
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap");
+    @font-face {
+      font-family: "Vazirmatn";
+      src: url("fonts/Vazirmatn-Regular.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: block;
+      unicode-range: U+0000-06EF, U+06FA-10FFFF;
+    }
+    @font-face {
+      font-family: "Vazirmatn";
+      src: url("fonts/Vazirmatn-FD-Regular.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+      font-display: block;
+      unicode-range: U+06F0-06F9;
+    }
+    @font-face {
+      font-family: "Vazirmatn";
+      src: url("fonts/Vazirmatn-Medium.ttf") format("truetype");
+      font-weight: 500;
+      font-style: normal;
+      font-display: block;
+      unicode-range: U+0000-06EF, U+06FA-10FFFF;
+    }
+    @font-face {
+      font-family: "Vazirmatn";
+      src: url("fonts/Vazirmatn-FD-Medium.ttf") format("truetype");
+      font-weight: 500;
+      font-style: normal;
+      font-display: block;
+      unicode-range: U+06F0-06F9;
+    }
+    @font-face {
+      font-family: "Vazirmatn";
+      src: url("fonts/Vazirmatn-SemiBold.ttf") format("truetype");
+      font-weight: 600;
+      font-style: normal;
+      font-display: block;
+      unicode-range: U+0000-06EF, U+06FA-10FFFF;
+    }
+    @font-face {
+      font-family: "Vazirmatn";
+      src: url("fonts/Vazirmatn-FD-SemiBold.ttf") format("truetype");
+      font-weight: 600;
+      font-style: normal;
+      font-display: block;
+      unicode-range: U+06F0-06F9;
+    }
+    @font-face {
+      font-family: "Vazirmatn";
+      src: url("fonts/Vazirmatn-Bold.ttf") format("truetype");
+      font-weight: 700;
+      font-style: normal;
+      font-display: block;
+      unicode-range: U+0000-06EF, U+06FA-10FFFF;
+    }
+    @font-face {
+      font-family: "Vazirmatn";
+      src: url("fonts/Vazirmatn-FD-Bold.ttf") format("truetype");
+      font-weight: 700;
+      font-style: normal;
+      font-display: block;
+      unicode-range: U+06F0-06F9;
+    }
 
     :root {
       --ink: #1a1a1a;
@@ -20,11 +83,13 @@
 
     body {
       margin: 0;
-      font-family: "Vazirmatn", Tahoma, sans-serif;
+      font-family: "Vazirmatn", sans-serif;
       font-size: 13.5pt;
       line-height: 2;
       color: var(--ink);
       background: #e8e8e8;
+      font-synthesis: none;
+      text-rendering: geometricPrecision;
     }
 
     .page {
@@ -112,7 +177,14 @@
     .toc .dots {
       flex: 1;
       border-bottom: 1px dotted #999;
-      height: 0.9em;
+      height: 0.85em;
+      min-width: 1.5em;
+    }
+    .toc .pn {
+      min-width: 1.6em;
+      text-align: left;
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
     }
     .figure {
       margin: 8mm auto;
@@ -184,18 +256,32 @@
 
     table {
       width: 100%;
-      border-collapse: collapse;
+      max-width: 100%;
       margin: 4mm 0 8mm;
       font-size: 11.5pt;
       line-height: 1.7;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #94a3b8;
+      box-sizing: border-box;
+      direction: rtl;
     }
     th, td {
-      border: 1px solid #cbd5e1;
-      padding: 3mm 4mm;
+      border: 0;
+      border-left: 1px solid #cbd5e1;
+      border-bottom: 1px solid #cbd5e1;
+      padding: 3mm 3.5mm;
       vertical-align: top;
       text-align: right;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      box-sizing: border-box;
     }
+    tr > :last-child { border-left: 0; }
+    tr:last-child > * { border-bottom: 0; }
     th { background: #f1f5f9; font-weight: 600; }
+    td code { white-space: normal; }
     code, .mono {
       font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
       font-size: 10.5pt;
@@ -230,15 +316,52 @@
     .page-break { page-break-before: always; }
 
     @media print {
+      @page { size: A4; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       body { background: #fff; }
       .page {
         margin: 0;
         box-shadow: none;
         max-width: none;
-        padding: 18mm 20mm;
+        width: auto;
+        padding: 0;
+        min-height: 0;
+        break-before: page;
+        page-break-before: always;
       }
-      h1.chapter, .front-title, .cover { page-break-before: always; }
+      #cover {
+        break-before: auto;
+        page-break-before: auto;
+        break-after: page;
+        page-break-after: always;
+        height: 248mm;
+        min-height: 248mm;
+      }
+      h1.chapter, .front-title {
+        break-before: auto !important;
+        page-break-before: auto !important;
+        margin-top: 0;
+        margin-bottom: 8mm;
+      }
+      table { font-size: 11pt; line-height: 1.45; }
+      th, td { padding: 2.2mm 3mm; }
+      h2, h3, h4 {
+        break-after: avoid;
+        page-break-after: avoid;
+      }
+      thead, tr {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      table {
+        width: 100%;
+        max-width: 100%;
+      }
       a { color: inherit; text-decoration: none; }
+      a.url, .refs a {
+        color: #0b3d91;
+        text-decoration: underline;
+      }
     }
   </style>
 </head>
@@ -353,64 +476,64 @@
 <section class="page toc" id="toc">
   <div class="front-title" style="page-break-before:auto">فهرست مطالب</div>
 
-  <div class="row chap"><a href="#ch1">فصل اول (ضرورت طراحی سامانه باغ دیجیتال)</a><span class="dots"></span></div>
-  <div class="row"><a href="#s1-1">۱-۱ مسئله مدیریت دانش شخصی</a><span class="dots"></span></div>
-  <div class="row"><a href="#s1-2">۱-۲ باغ دیجیتال چیست؟</a><span class="dots"></span></div>
-  <div class="row"><a href="#s1-3">۱-۳ محدودیت‌های رویکردهای رایج</a><span class="dots"></span></div>
-  <div class="row"><a href="#s1-4">۱-۴ مقایسه با ابزارهای مشابه</a><span class="dots"></span></div>
-  <div class="row"><a href="#s1-5">۱-۵ اهداف پروژه</a><span class="dots"></span></div>
-  <div class="row"><a href="#s1-6">۱-۶ مزایای سامانه پیشنهادی</a><span class="dots"></span></div>
-  <div class="row"><a href="#s1-7">۱-۷ ساختار گزارش</a><span class="dots"></span></div>
-  <div class="row chap"><a href="#ch2">فصل دوم (طراحی و توصیف عملکرد نرم‌افزار)</a><span class="dots"></span></div>
-  <div class="row"><a href="#s2-1">۲-۱ صفحه ورود و ثبت‌نام</a><span class="dots"></span></div>
-  <div class="row"><a href="#s2-2">۲-۲ داشبورد باغ</a><span class="dots"></span></div>
-  <div class="row"><a href="#s2-3">۲-۳ فهرست و ایجاد یادداشت</a><span class="dots"></span></div>
-  <div class="row"><a href="#s2-4">۲-۴ ویرایشگر و پیوند ویکی‌مانند</a><span class="dots"></span></div>
-  <div class="row"><a href="#s2-5">۲-۵ پنل بک‌لینک‌ها و گراف محلی</a><span class="dots"></span></div>
-  <div class="row"><a href="#s2-6">۲-۶ نمای باغ (گراف تعاملی)</a><span class="dots"></span></div>
-  <div class="row"><a href="#s2-7">۲-۷ یافتن مسیر میان ایده‌ها</a><span class="dots"></span></div>
-  <div class="row"><a href="#s2-8">۲-۸ ناوبری کلی</a><span class="dots"></span></div>
-  <div class="row chap"><a href="#ch3">فصل سوم (پیش‌نیازها)</a><span class="dots"></span></div>
-  <div class="row"><a href="#s3-1">۳-۱ TypeScript</a><span class="dots"></span></div>
-  <div class="row"><a href="#s3-2">۳-۲ React و Next.js</a><span class="dots"></span></div>
-  <div class="row"><a href="#s3-3">۳-۳ Tailwind CSS</a><span class="dots"></span></div>
-  <div class="row"><a href="#s3-4">۳-۴ TipTap</a><span class="dots"></span></div>
-  <div class="row"><a href="#s3-5">۳-۵ React Flow</a><span class="dots"></span></div>
-  <div class="row"><a href="#s3-6">۳-۶ پایگاه داده PostgreSQL</a><span class="dots"></span></div>
-  <div class="row"><a href="#s3-7">۳-۷ ORM و Prisma</a><span class="dots"></span></div>
-  <div class="row"><a href="#s3-8">۳-۸ API و JSON</a><span class="dots"></span></div>
-  <div class="row"><a href="#s3-9">۳-۹ احراز هویت JWT</a><span class="dots"></span></div>
-  <div class="row"><a href="#s3-10">۳-۱۰ گراف، BFS و CTE بازگشتی</a><span class="dots"></span></div>
-  <div class="row"><a href="#s3-11">۳-۱۱ Docker</a><span class="dots"></span></div>
-  <div class="row"><a href="#s3-12">۳-۱۲ سایر کتابخانه‌های کمکی</a><span class="dots"></span></div>
-  <div class="row chap"><a href="#ch4">فصل چهارم (پیاده‌سازی سامانه باغ دیجیتال)</a><span class="dots"></span></div>
-  <div class="row"><a href="#s4-1">۴-۱ معماری کلی سامانه</a><span class="dots"></span></div>
-  <div class="row"><a href="#s4-2">۴-۲ مدل داده‌ها</a><span class="dots"></span></div>
-  <div class="row"><a href="#s4-3">۴-۳ احراز هویت</a><span class="dots"></span></div>
-  <div class="row"><a href="#s4-4">۴-۴ مدیریت یادداشت و همگام‌سازی پیوندها</a><span class="dots"></span></div>
-  <div class="row"><a href="#s4-5">۴-۵ APIهای گراف و داشبورد</a><span class="dots"></span></div>
-  <div class="row"><a href="#s4-6">۴-۶ رابط کاربری و استقرار</a><span class="dots"></span></div>
-  <div class="row"><a href="#s4-7">۴-۷ نکات طراحی نرم‌افزاری</a><span class="dots"></span></div>
-  <div class="row"><a href="#s4-8">۴-۸ نمونه کدهای کلیدی</a><span class="dots"></span></div>
-  <div class="row chap"><a href="#ch5">فصل پنجم (نتیجه‌گیری و پیشنهادها)</a><span class="dots"></span></div>
-  <div class="row chap"><a href="#refs">فهرست منابع</a><span class="dots"></span></div>
-  <div class="row chap"><a href="#appendix">پیوست — واژه‌نامه</a><span class="dots"></span></div>
+  <div class="row chap"><a href="#ch1">فصل اول (ضرورت طراحی سامانه باغ دیجیتال)</a><span class="dots"></span><span class="pn">۸</span></div>
+  <div class="row"><a href="#s1-1">۱-۱ مسئله مدیریت دانش شخصی</a><span class="dots"></span><span class="pn">۸</span></div>
+  <div class="row"><a href="#s1-2">۱-۲ باغ دیجیتال چیست؟</a><span class="dots"></span><span class="pn">۹</span></div>
+  <div class="row"><a href="#s1-3">۱-۳ محدودیت‌های رویکردهای رایج</a><span class="dots"></span><span class="pn">۹</span></div>
+  <div class="row"><a href="#s1-4">۱-۴ مقایسه با ابزارهای مشابه</a><span class="dots"></span><span class="pn">۱۰</span></div>
+  <div class="row"><a href="#s1-5">۱-۵ اهداف پروژه</a><span class="dots"></span><span class="pn">۱۰</span></div>
+  <div class="row"><a href="#s1-6">۱-۶ مزایای سامانه پیشنهادی</a><span class="dots"></span><span class="pn">۱۱</span></div>
+  <div class="row"><a href="#s1-7">۱-۷ ساختار گزارش</a><span class="dots"></span><span class="pn">۱۱</span></div>
+  <div class="row chap"><a href="#ch2">فصل دوم (طراحی و توصیف عملکرد نرم‌افزار)</a><span class="dots"></span><span class="pn">۱۲</span></div>
+  <div class="row"><a href="#s2-1">۲-۱ صفحه ورود و ثبت‌نام</a><span class="dots"></span><span class="pn">۱۲</span></div>
+  <div class="row"><a href="#s2-2">۲-۲ داشبورد باغ</a><span class="dots"></span><span class="pn">۱۳</span></div>
+  <div class="row"><a href="#s2-3">۲-۳ فهرست و ایجاد یادداشت</a><span class="dots"></span><span class="pn">۱۳</span></div>
+  <div class="row"><a href="#s2-4">۲-۴ ویرایشگر و پیوند ویکی‌مانند</a><span class="dots"></span><span class="pn">۱۴</span></div>
+  <div class="row"><a href="#s2-5">۲-۵ پنل بک‌لینک‌ها و گراف محلی</a><span class="dots"></span><span class="pn">۱۵</span></div>
+  <div class="row"><a href="#s2-6">۲-۶ نمای باغ (گراف تعاملی)</a><span class="dots"></span><span class="pn">۱۵</span></div>
+  <div class="row"><a href="#s2-7">۲-۷ یافتن مسیر میان ایده‌ها</a><span class="dots"></span><span class="pn">۱۶</span></div>
+  <div class="row"><a href="#s2-8">۲-۸ ناوبری کلی</a><span class="dots"></span><span class="pn">۱۷</span></div>
+  <div class="row chap"><a href="#ch3">فصل سوم (پیش‌نیازها)</a><span class="dots"></span><span class="pn">۱۸</span></div>
+  <div class="row"><a href="#s3-1">۳-۱ TypeScript</a><span class="dots"></span><span class="pn">۱۸</span></div>
+  <div class="row"><a href="#s3-2">۳-۲ React و Next.js</a><span class="dots"></span><span class="pn">۱۸</span></div>
+  <div class="row"><a href="#s3-3">۳-۳ Tailwind CSS</a><span class="dots"></span><span class="pn">۱۹</span></div>
+  <div class="row"><a href="#s3-4">۳-۴ TipTap</a><span class="dots"></span><span class="pn">۱۹</span></div>
+  <div class="row"><a href="#s3-5">۳-۵ React Flow</a><span class="dots"></span><span class="pn">۲۰</span></div>
+  <div class="row"><a href="#s3-6">۳-۶ پایگاه داده PostgreSQL</a><span class="dots"></span><span class="pn">۲۰</span></div>
+  <div class="row"><a href="#s3-7">۳-۷ ORM و Prisma</a><span class="dots"></span><span class="pn">۲۰</span></div>
+  <div class="row"><a href="#s3-8">۳-۸ API و JSON</a><span class="dots"></span><span class="pn">۲۱</span></div>
+  <div class="row"><a href="#s3-9">۳-۹ احراز هویت JWT</a><span class="dots"></span><span class="pn">۲۱</span></div>
+  <div class="row"><a href="#s3-10">۳-۱۰ گراف، BFS و CTE بازگشتی</a><span class="dots"></span><span class="pn">۲۱</span></div>
+  <div class="row"><a href="#s3-11">۳-۱۱ Docker</a><span class="dots"></span><span class="pn">۲۳</span></div>
+  <div class="row"><a href="#s3-12">۳-۱۲ سایر کتابخانه‌های کمکی</a><span class="dots"></span><span class="pn">۲۳</span></div>
+  <div class="row chap"><a href="#ch4">فصل چهارم (پیاده‌سازی سامانه باغ دیجیتال)</a><span class="dots"></span><span class="pn">۲۴</span></div>
+  <div class="row"><a href="#s4-1">۴-۱ معماری کلی سامانه</a><span class="dots"></span><span class="pn">۲۴</span></div>
+  <div class="row"><a href="#s4-2">۴-۲ مدل داده‌ها</a><span class="dots"></span><span class="pn">۲۵</span></div>
+  <div class="row"><a href="#s4-3">۴-۳ احراز هویت</a><span class="dots"></span><span class="pn">۲۶</span></div>
+  <div class="row"><a href="#s4-4">۴-۴ مدیریت یادداشت و همگام‌سازی پیوندها</a><span class="dots"></span><span class="pn">۲۷</span></div>
+  <div class="row"><a href="#s4-5">۴-۵ APIهای گراف و داشبورد</a><span class="dots"></span><span class="pn">۲۷</span></div>
+  <div class="row"><a href="#s4-6">۴-۶ رابط کاربری و استقرار</a><span class="dots"></span><span class="pn">۲۸</span></div>
+  <div class="row"><a href="#s4-7">۴-۷ نکات طراحی نرم‌افزاری</a><span class="dots"></span><span class="pn">۲۹</span></div>
+  <div class="row"><a href="#s4-8">۴-۸ نمونه کدهای کلیدی</a><span class="dots"></span><span class="pn">۳۰</span></div>
+  <div class="row chap"><a href="#ch5">فصل پنجم (نتیجه‌گیری و پیشنهادها)</a><span class="dots"></span><span class="pn">۳۲</span></div>
+  <div class="row chap"><a href="#refs">فهرست منابع</a><span class="dots"></span><span class="pn">۳۴</span></div>
+  <div class="row chap"><a href="#appendix">پیوست — واژه‌نامه</a><span class="dots"></span><span class="pn">۳۶</span></div>
 </section>
 
 <!-- ===================== FIGURES TOC ===================== -->
 <section class="page toc" id="lof">
   <div class="front-title" style="page-break-before:auto">فهرست اشکال</div>
-  <div class="row"><a href="#fig-2-1">شکل ۲-۱ صفحه ورود</a><span class="dots"></span></div>
-  <div class="row"><a href="#fig-2-2">شکل ۲-۲ داشبورد باغ</a><span class="dots"></span></div>
-  <div class="row"><a href="#fig-2-3">شکل ۲-۳ فهرست یادداشت‌ها</a><span class="dots"></span></div>
-  <div class="row"><a href="#fig-2-4">شکل ۲-۴ ویرایشگر، بک‌لینک و یافتن مسیر</a><span class="dots"></span></div>
-  <div class="row"><a href="#fig-2-5">شکل ۲-۵ نمای باغ (گراف تعاملی)</a><span class="dots"></span></div>
-  <div class="row"><a href="#fig-3-1">شکل ۳-۱ نمونه ساختار JSON پاسخ گراف</a><span class="dots"></span></div>
-  <div class="row"><a href="#fig-3-2">شکل ۳-۲ مدل مفهومی گراف دانش</a><span class="dots"></span></div>
-  <div class="row"><a href="#fig-4-1">شکل ۴-۱ معماری لایه‌ای سامانه</a><span class="dots"></span></div>
-  <div class="row"><a href="#fig-4-2">شکل ۴-۲ نمودار ERD سامانه</a><span class="dots"></span></div>
-  <div class="row"><a href="#code-4-1">کد ۴-۱ استخراج پیوندهای ویکی‌مانند</a><span class="dots"></span></div>
-  <div class="row"><a href="#code-4-2">کد ۴-۲ هسته الگوریتم BFS</a><span class="dots"></span></div>
+  <div class="row"><a href="#fig-2-1">شکل ۲-۱ صفحه ورود</a><span class="dots"></span><span class="pn">۱۲</span></div>
+  <div class="row"><a href="#fig-2-2">شکل ۲-۲ داشبورد باغ</a><span class="dots"></span><span class="pn">۱۳</span></div>
+  <div class="row"><a href="#fig-2-3">شکل ۲-۳ فهرست یادداشت‌ها</a><span class="dots"></span><span class="pn">۱۴</span></div>
+  <div class="row"><a href="#fig-2-4">شکل ۲-۴ ویرایشگر، بک‌لینک و یافتن مسیر</a><span class="dots"></span><span class="pn">۱۵</span></div>
+  <div class="row"><a href="#fig-2-5">شکل ۲-۵ نمای باغ (گراف تعاملی)</a><span class="dots"></span><span class="pn">۱۶</span></div>
+  <div class="row"><a href="#fig-3-1">شکل ۳-۱ نمونه ساختار JSON پاسخ گراف</a><span class="dots"></span><span class="pn">۲۱</span></div>
+  <div class="row"><a href="#fig-3-2">شکل ۳-۲ مدل مفهومی گراف دانش</a><span class="dots"></span><span class="pn">۲۲</span></div>
+  <div class="row"><a href="#fig-4-1">شکل ۴-۱ معماری لایه‌ای سامانه</a><span class="dots"></span><span class="pn">۲۵</span></div>
+  <div class="row"><a href="#fig-4-2">شکل ۴-۲ نمودار ERD سامانه</a><span class="dots"></span><span class="pn">۲۶</span></div>
+  <div class="row"><a href="#code-4-1">کد ۴-۱ استخراج پیوندهای ویکی‌مانند</a><span class="dots"></span><span class="pn">۳۰</span></div>
+  <div class="row"><a href="#code-4-2">کد ۴-۲ هسته الگوریتم BFS</a><span class="dots"></span><span class="pn">۳۱</span></div>
 </section>
 
 <!-- ===================== CHAPTER 1 ===================== -->
@@ -838,10 +961,10 @@
       <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/>
     </marker>
     <style>
-      .title { font: 700 16px Tahoma, "Noto Naskh Arabic", sans-serif; fill: #0f172a; }
-      .label { font: 700 13px Tahoma, "Noto Naskh Arabic", sans-serif; fill: #065f46; }
-      .small { font: 500 11px Tahoma, "Noto Naskh Arabic", sans-serif; fill: #475569; }
-      .legend { font: 500 12px Tahoma, "Noto Naskh Arabic", sans-serif; fill: #334155; }
+      .title { font: 700 16px Vazirmatn, sans-serif; fill: #0f172a; }
+      .label { font: 700 13px Vazirmatn, sans-serif; fill: #065f46; }
+      .small { font: 500 11px Vazirmatn, sans-serif; fill: #475569; }
+      .legend { font: 500 12px Vazirmatn, sans-serif; fill: #334155; }
       .mono { font: 600 11px Consolas, monospace; fill: #0f766e; }
       .edge { stroke: #059669; stroke-width: 2.2; fill: none; }
       .edge-dash { stroke: #94a3b8; stroke-width: 1.8; fill: none; stroke-dasharray: 5 4; }
@@ -955,13 +1078,13 @@
       <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
     </marker>
     <style>
-      .t { font: 700 16px Tahoma, "Noto Naskh Arabic", sans-serif; fill: #0f172a; }
-      .s { font: 500 12px Tahoma, "Noto Naskh Arabic", sans-serif; fill: #64748b; }
-      .layer { font: 700 13px Tahoma, "Noto Naskh Arabic", sans-serif; fill: #0f172a; }
-      .item { font: 600 12px Tahoma, sans-serif; fill: #1e293b; }
-      .fa { font: 600 12px Tahoma, "Noto Naskh Arabic", sans-serif; fill: #1e293b; }
-      .sub { font: 500 11px Tahoma, sans-serif; fill: #475569; }
-      .flow { font: 600 11px Tahoma, "Noto Naskh Arabic", sans-serif; fill: #475569; }
+      .t { font: 700 16px Vazirmatn, sans-serif; fill: #0f172a; }
+      .s { font: 500 12px Vazirmatn, sans-serif; fill: #64748b; }
+      .layer { font: 700 13px Vazirmatn, sans-serif; fill: #0f172a; }
+      .item { font: 600 12px Vazirmatn, sans-serif; fill: #1e293b; }
+      .fa { font: 600 12px Vazirmatn, sans-serif; fill: #1e293b; }
+      .sub { font: 500 11px Vazirmatn, sans-serif; fill: #475569; }
+      .flow { font: 600 11px Vazirmatn, sans-serif; fill: #475569; }
     </style>
   </defs>
   <rect width="760" height="480" rx="12" fill="#f8fafc"/>
@@ -1063,12 +1186,12 @@ prisma/
       <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
     </marker>
     <style>
-      .t { font: 700 17px Tahoma, "Noto Naskh Arabic", sans-serif; fill: #0f172a; }
-      .h { font: 700 13px Tahoma, sans-serif; fill: #fff; }
+      .t { font: 700 17px Vazirmatn, sans-serif; fill: #0f172a; }
+      .h { font: 700 13px Vazirmatn, sans-serif; fill: #fff; }
       .k { font: 600 12px Consolas, "DejaVu Sans Mono", monospace; fill: #0f766e; }
       .n { font: 500 12px Consolas, "DejaVu Sans Mono", monospace; fill: #334155; }
-      .c { font: 700 13px Tahoma, sans-serif; fill: #334155; }
-      .s { font: 500 12px Tahoma, "Noto Naskh Arabic", sans-serif; fill: #64748b; }
+      .c { font: 700 13px Vazirmatn, sans-serif; fill: #334155; }
+      .s { font: 500 12px Vazirmatn, sans-serif; fill: #64748b; }
     </style>
   </defs>
   <rect width="800" height="440" rx="12" fill="#f8fafc"/>
