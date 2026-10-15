@@ -32,6 +32,24 @@ export function extractWikiLinks(content: string): string[] {
   return Array.from(links);
 }
 
+export type LinkTargetNote = { id: string; title: string; slug: string };
+
+export function resolveLabelsToTargets(
+  labels: string[],
+  notes: LinkTargetNote[],
+  excludeNoteId?: string,
+): string[] {
+  const bySlug = new Map(notes.map((note) => [note.slug.toLowerCase(), note.id]));
+  const byTitle = new Map(notes.map((note) => [note.title.toLowerCase(), note.id]));
+  const targetIds = new Set<string>();
+  for (const label of labels) {
+    const key = label.trim().toLowerCase();
+    const id = bySlug.get(key) ?? byTitle.get(key);
+    if (id && id !== excludeNoteId) targetIds.add(id);
+  }
+  return Array.from(targetIds);
+}
+
 export async function resolveNoteTargets(
   userId: string,
   labels: string[],
@@ -42,21 +60,7 @@ export async function resolveNoteTargets(
     where: { userId },
     select: { id: true, title: true, slug: true },
   });
-
-  const bySlug = new Map(notes.map((n) => [n.slug.toLowerCase(), n.id]));
-  const byTitle = new Map(notes.map((n) => [n.title.toLowerCase(), n.id]));
-
-  const targetIds = new Set<string>();
-
-  for (const label of labels) {
-    const key = label.toLowerCase();
-    const id = bySlug.get(key) ?? byTitle.get(key);
-    if (id && id !== excludeNoteId) {
-      targetIds.add(id);
-    }
-  }
-
-  return Array.from(targetIds);
+  return resolveLabelsToTargets(labels, notes, excludeNoteId);
 }
 
 export async function syncNoteLinks(

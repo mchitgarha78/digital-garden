@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getUserFromRequest } from "@/lib/auth";
 import { unauthorized } from "@/lib/api";
-import { getFullGraph, getLocalGraph, findPathBFS, findPathRecursiveCTE } from "@/lib/graph";
+import { getFullGraph, findPathBFS, findPathRecursiveCTE } from "@/lib/graph";
 
 export async function GET(request: Request) {
   const user = await getUserFromRequest(request);

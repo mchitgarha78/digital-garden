@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import {
   ReactFlow,
   Background,
@@ -14,6 +13,10 @@ import {
   type OnNodeDrag,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+
+const subscribeToNothing = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 type GraphNode = {
   id: string;
@@ -35,7 +38,7 @@ type GardenGraphProps = {
 };
 
 export function GardenGraph({ initialNodes, initialEdges }: GardenGraphProps) {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(subscribeToNothing, getClientSnapshot, getServerSnapshot);
 
   const flowNodes: Node[] = useMemo(
     () =>
@@ -73,10 +76,6 @@ export function GardenGraph({ initialNodes, initialEdges }: GardenGraphProps) {
 
   const [nodes, setNodes, onNodesChange] = useNodesState(flowNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(flowEdges);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     setNodes(flowNodes);

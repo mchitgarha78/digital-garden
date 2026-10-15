@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import { findShortestPath } from "./graph-algorithms";
 
 export type GraphNode = {
   id: string;
@@ -108,7 +109,7 @@ export async function getLocalGraph(
   return { nodes: Array.from(nodeMap.values()), edges };
 }
 
-/** BFS shortest path on undirected graph */
+/** BFS shortest path on an undirected graph. */
 export async function findPathBFS(
   userId: string,
   fromSlug: string,
@@ -118,60 +119,14 @@ export async function findPathBFS(
     where: { userId },
     select: { id: true, title: true, slug: true, posX: true, posY: true },
   });
-
-  const noteById = new Map(notes.map((n) => [n.id, n]));
-  const noteBySlug = new Map(notes.map((n) => [n.slug, n]));
-  const start = noteBySlug.get(fromSlug);
-  const end = noteBySlug.get(toSlug);
-
-  if (!start || !end) return null;
-  if (start.id === end.id) {
-    return { path: [start], distance: 0 };
-  }
+  if (!notes.some((note) => note.slug === fromSlug) ||
+      !notes.some((note) => note.slug === toSlug)) return null;
 
   const links = await prisma.link.findMany({
-    where: { source: { userId } },
+    where: { source: { userId }, target: { userId } },
     select: { sourceId: true, targetId: true },
   });
-
-  const adjacency = new Map<string, string[]>();
-  for (const link of links) {
-    if (!adjacency.has(link.sourceId)) adjacency.set(link.sourceId, []);
-    if (!adjacency.has(link.targetId)) adjacency.set(link.targetId, []);
-    adjacency.get(link.sourceId)!.push(link.targetId);
-    adjacency.get(link.targetId)!.push(link.sourceId);
-  }
-
-  const queue: string[] = [start.id];
-  const visited = new Set<string>([start.id]);
-  const parent = new Map<string, string>();
-
-  while (queue.length > 0) {
-    const current = queue.shift()!;
-    if (current === end.id) break;
-
-    for (const neighbor of adjacency.get(current) ?? []) {
-      if (visited.has(neighbor)) continue;
-      visited.add(neighbor);
-      parent.set(neighbor, current);
-      queue.push(neighbor);
-    }
-  }
-
-  if (!visited.has(end.id)) return null;
-
-  const pathIds: string[] = [];
-  let cursor: string | undefined = end.id;
-  while (cursor) {
-    pathIds.unshift(cursor);
-    cursor = parent.get(cursor);
-  }
-
-  const path = pathIds
-    .map((id) => noteById.get(id))
-    .filter(Boolean) as GraphNode[];
-
-  return { path, distance: path.length - 1 };
+  return findShortestPath(notes, links, fromSlug, toSlug);
 }
 
 /** PostgreSQL recursive CTE for shortest path (undirected) */
@@ -198,15 +153,19 @@ export async function findPathRecursiveCTE(
 
   const rows = await prisma.$queryRaw<PathRow[]>`
     WITH RECURSIVE edges AS (
-      SELECT source_id AS a, target_id AS b
+      SELECT l.source_id AS a, l.target_id AS b
       FROM links l
-      INNER JOIN notes n ON n.id = l.source_id
-      WHERE n.user_id = ${userId}
+      INNER JOIN notes source_note ON source_note.id = l.source_id
+      INNER JOIN notes target_note ON target_note.id = l.target_id
+      WHERE source_note.user_id = ${userId}
+        AND target_note.user_id = ${userId}
       UNION
-      SELECT target_id AS a, source_id AS b
+      SELECT l.target_id AS a, l.source_id AS b
       FROM links l
-      INNER JOIN notes n ON n.id = l.source_id
-      WHERE n.user_id = ${userId}
+      INNER JOIN notes source_note ON source_note.id = l.source_id
+      INNER JOIN notes target_note ON target_note.id = l.target_id
+      WHERE source_note.user_id = ${userId}
+        AND target_note.user_id = ${userId}
     ),
     paths AS (
       SELECT
@@ -223,7 +182,7 @@ export async function findPathRecursiveCTE(
       FROM paths p
       JOIN edges e ON e.a::text = p.end_id
       WHERE NOT e.b::text = ANY(p.path)
-        AND p.depth < 15
+        AND p.depth < ${notes.length - 1}
     )
     SELECT end_id, path, depth
     FROM paths
